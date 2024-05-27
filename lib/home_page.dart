@@ -1,134 +1,14 @@
 import 'package:flutter/material.dart';
+
+import 'package:recettes/category_button.dart';
+import 'package:recettes/custom_text_field.dart';
 import 'package:recettes/return_state.dart';
 import 'package:recettes/recipe.dart';
-import 'package:recettes/recipes_list.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   final ReturnState returnState;
 
   const HomePage({Key? key, required this.returnState}) : super(key: key);
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final TextEditingController _textEditingController = TextEditingController();
-
-  @override
-  void dispose() {
-    _textEditingController.dispose();
-    super.dispose();
-  }
-
-  Widget _categoryButton(RecipeCategory category) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    return SizedBox(
-      width: screenWidth * 0.4,
-      height: 100.0,
-      child: ElevatedButton(
-        onPressed: () {
-          widget.returnState.needReturn();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => RecipeList(
-                returnState: widget.returnState,
-                categoryFilter: category,
-              ),
-            ),
-          );
-        },
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-            side: BorderSide(color: category.getColor(), width: 2.0),
-          ),
-          foregroundColor: Colors.black,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            category.getIcon(), // Assuming getIcon() returns IconData
-            const SizedBox(width: 8.0),
-            Text(
-              category.getName(),
-              style: const TextStyle(
-                fontSize: 18.0, // Increase text size
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _submitSearch() {
-    if (_textEditingController.text.trim().isEmpty) {
-      _textEditingController.clear();
-      return;
-    }
-    List<String> keywords = _textEditingController.text.trim().split(' ');
-    widget.returnState.needReturn();
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => RecipeList(
-          returnState: widget.returnState,
-          keywordsFilter: keywords,
-        ),
-      ),
-    );
-  }
-
-  Widget _customTextField() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Search button
-        SizedBox(
-          height: 50.0,
-          width: 50.0,
-          child: IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: _submitSearch,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 5.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
-                side: const BorderSide(color: Colors.amber, width: 2.0),
-              ),
-              foregroundColor: Colors.black,
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: TextField(
-            controller: _textEditingController,
-            onSubmitted: (_) => _submitSearch(),
-            decoration: InputDecoration(
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.amber, width: 2.0),
-              ),
-              border: const OutlineInputBorder(),
-              hintText: 'Tappez vos ingrédients',
-              labelText: 'On mange quoi ?',
-              labelStyle: const TextStyle(color: Colors.grey),
-              // add clear icon
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: () {
-                  _textEditingController.clear();
-                },
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +30,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 50.0),
-            _customTextField(),
+            CustomTextField(returnState: returnState),
             const SizedBox(height: 16.0),
             Expanded(
               child: Row(
@@ -159,22 +39,40 @@ class _HomePageState extends State<HomePage> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _categoryButton(RecipeCategory.viande),
+                      CategoryButton(
+                        category: RecipeCategory.viande,
+                        returnState: returnState,
+                      ),
                       const SizedBox(height: 16.0),
-                      _categoryButton(RecipeCategory.legume),
+                      CategoryButton(
+                        category: RecipeCategory.legume,
+                        returnState: returnState,
+                      ),
                       const SizedBox(height: 16.0),
-                      _categoryButton(RecipeCategory.apero),
+                      CategoryButton(
+                        category: RecipeCategory.apero,
+                        returnState: returnState,
+                      ),
                     ],
                   ),
                   const SizedBox(width: 16.0),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _categoryButton(RecipeCategory.poisson),
+                      CategoryButton(
+                        category: RecipeCategory.poisson,
+                        returnState: returnState,
+                      ),
                       const SizedBox(height: 16.0),
-                      _categoryButton(RecipeCategory.dessert),
+                      CategoryButton(
+                        category: RecipeCategory.dessert,
+                        returnState: returnState,
+                      ),
                       const SizedBox(height: 16.0),
-                      _categoryButton(RecipeCategory.pain),
+                      CategoryButton(
+                        category: RecipeCategory.pain,
+                        returnState: returnState,
+                      ),
                     ],
                   ),
                 ],
