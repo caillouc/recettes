@@ -22,8 +22,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _categoryButton(RecipeCategory category) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return SizedBox(
-      width: 175.0,
+      width: screenWidth * 0.4,
       height: 100.0,
       child: ElevatedButton(
         onPressed: () {
