@@ -154,6 +154,9 @@ class _RecipeListState extends State<RecipeList> {
                                 setState(() {
                                   _keywords.remove(keyword);
                                 });
+                                if (_keywords.isEmpty) {
+                                  Navigator.of(context).pop();
+                                }
                               },
                             ),
                           ),
