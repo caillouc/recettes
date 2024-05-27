@@ -107,6 +107,7 @@ class _RecipeViewState extends State<RecipeView> {
                 padding: const EdgeInsets.all(10.0),
                 child: Container(
                   // Set color to present the recipe as a piece of code
+                  width: double.infinity,
                   decoration: const BoxDecoration(
                       color: Color.fromARGB(255, 208, 208, 208),
                       borderRadius: BorderRadius.all(Radius.circular(20))),
