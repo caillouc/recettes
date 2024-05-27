@@ -162,9 +162,6 @@ class _MyHomePageState extends State<MyHomePage>
           ? FloatingActionButton(
               onPressed: () {
                 Navigator.of(_navigatorContext).pop();
-                if (!Navigator.of(_navigatorContext).canPop()) {
-                  _returnState.returnPressed();
-                }
               },
               child: const Icon(Icons.arrow_back),
             )
