@@ -10,7 +10,11 @@ class RecipeView extends StatefulWidget {
   final bool isFavorite;
   final ReturnState returnState;
 
-  const RecipeView({Key? key, required this.recipe, required this.isFavorite, required this.returnState})
+  const RecipeView(
+      {Key? key,
+      required this.recipe,
+      required this.isFavorite,
+      required this.returnState})
       : super(key: key);
 
   @override
@@ -19,6 +23,8 @@ class RecipeView extends StatefulWidget {
 
 class _RecipeViewState extends State<RecipeView> {
   late bool isFavorite;
+  double _scaleFactor = 1.0;
+  double _baseScaleFactor = 1.0;
 
   @override
   void initState() {
@@ -105,19 +111,62 @@ class _RecipeViewState extends State<RecipeView> {
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(10.0),
-                child: Container(
-                  // Set color to present the recipe as a piece of code
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 208, 208, 208),
-                      borderRadius: BorderRadius.all(Radius.circular(20))),
-                  padding: const EdgeInsets.all(15.0),
-                  child: Text(
-                    widget.recipe.description,
-                    style: const TextStyle(
-                      fontSize: 16.0,
+                child: Stack(
+                  children: [
+                    Container(
+                      // Set color to present the recipe as a piece of code
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 208, 208, 208),
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
+                      padding: const EdgeInsets.all(15.0),
+                      child: GestureDetector(
+                        onScaleStart: (details) {
+                          _baseScaleFactor = _scaleFactor;
+                        },
+                        onScaleUpdate: (details) {
+                          setState(() {
+                            _scaleFactor = (_baseScaleFactor * details.scale)
+                                .clamp(0.8, 3.0);
+                          });
+                        },
+                        onDoubleTap: () => setState(() {
+                          _scaleFactor = 1.0;
+                        }),
+                        child: Stack(
+                          children: [
+                            Text(
+                              widget.recipe.description,
+                              style: TextStyle(
+                                fontSize: 16.0 * _scaleFactor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                    Positioned(
+                      top: -5.0,
+                      right: -5.0,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.help_outline,
+                          size: 30.0,
+                        ),
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Pincez pour zoomer, Double-tapez pour réinitialiser',
+                                style: TextStyle(fontSize: 15.0),
+                              ),
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
