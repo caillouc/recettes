@@ -190,8 +190,15 @@ class _RecipeListState extends State<RecipeList> {
                     _recipesToDisplay = recipes
                         .where((recipe) => _filterScore(recipe, _keywords) > 0)
                         .toList();
-                    _recipesToDisplay.sort((a, b) => _filterScore(b, _keywords)
-                        .compareTo(_filterScore(a, _keywords)));
+                    // sort recipeToDisplay by filterScore and then by title
+                    _recipesToDisplay.sort((a, b) {
+                      int scoreA = _filterScore(a, _keywords);
+                      int scoreB = _filterScore(b, _keywords);
+                      if (scoreA != scoreB) {
+                        return scoreB - scoreA;
+                      }
+                      return a.title.compareTo(b.title);
+                    });
                   } else {
                     _recipesToDisplay = recipes;
                     _recipesToDisplay.sort((a, b) => a.title.compareTo(b.title));
