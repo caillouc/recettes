@@ -113,36 +113,40 @@ class _RecipeListState extends State<RecipeList> {
     return score;
   }
 
-  ListTile recipeTile(Recipe recipe) {
+  Widget recipeTile(Recipe recipe) {
     bool isFav = _favorites.contains(recipe.id);
-    return ListTile(
-      title: Text(
-        recipe.title,
-        style: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+    return AnimatedOpacity(
+      opacity: _pendingRemove.contains(recipe.id) ? 0.0 : 1.0,
+      duration: Duration(seconds: _pendingRemove.contains(recipe.id) ? 3 : 0),
+      child: ListTile(
+        title: Text(
+          recipe.title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-      ),
-      subtitle: Text(
-        recipe.subtitle,
-        style: const TextStyle(fontSize: 16, color: Colors.grey),
-      ),
-      tileColor: const Color(0xfff7f2fa),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      leading: recipe.category.getIcon(),
-      onTap: () {
-        onRecipePressed(recipe);
-      },
-      // make trailing a favorite button
-      trailing: IconButton(
-        icon: isFav
-            ? CustomIcon.favorite.getColorSolidIcon()
-            : CustomIcon.favorite.getBlackOutlinedIcon(),
-        onPressed: () {
-          toogleFav(recipe);
+        subtitle: Text(
+          recipe.subtitle,
+          style: const TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+        tileColor: const Color(0xfff7f2fa),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        leading: recipe.category.getIcon(),
+        onTap: () {
+          onRecipePressed(recipe);
         },
+        // make trailing a favorite button
+        trailing: IconButton(
+          icon: isFav
+              ? CustomIcon.favorite.getColorSolidIcon()
+              : CustomIcon.favorite.getBlackOutlinedIcon(),
+          onPressed: () {
+            toogleFav(recipe);
+          },
+        ),
       ),
     );
   }
