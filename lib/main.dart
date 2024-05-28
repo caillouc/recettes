@@ -106,6 +106,7 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   void _onDestinationSelected(int index) {
+    HapticFeedback.selectionClick();
     if (_currentPageIndex != index) {
       setState(() {
         _currentPageIndex = index;

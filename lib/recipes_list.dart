@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:diacritic/diacritic.dart';
@@ -35,7 +36,7 @@ class _RecipeListState extends State<RecipeList> {
   List<Recipe> _recipesToDisplay = [];
   List<String> _keywords = [];
   late Future<SharedPreferences> _prefs;
-  Map<String, Timer> _removeTimers = {};
+  final Map<String, Timer> _removeTimers = {};
 
   @override
   void initState() {
@@ -45,6 +46,7 @@ class _RecipeListState extends State<RecipeList> {
   }
 
   void toogleFav(Recipe recipe) {
+  HapticFeedback.heavyImpact();
   bool isFav = _favorites.contains(recipe.id) && !_pendingRemove.contains(recipe.id);
     if (isFav) {
       removeSavedFavorite(recipe.id);

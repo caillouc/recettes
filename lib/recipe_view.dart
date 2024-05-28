@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:recettes/custom_icon.dart';
+import 'package:flutter/services.dart';
 
+import 'package:recettes/custom_icon.dart';
 import 'package:recettes/return_state.dart';
 import 'package:recettes/recipe.dart';
 import 'package:recettes/main.dart';
@@ -78,6 +79,7 @@ class _RecipeViewState extends State<RecipeView> {
                         ? CustomIcon.favorite.getColorSolidBigIcon()
                         : CustomIcon.favorite.getColorOutlinedBigIcon(),
                     onPressed: () {
+                      HapticFeedback.heavyImpact();
                       if (isFavorite) {
                         removeSavedFavorite(widget.recipe.id);
                       } else {
