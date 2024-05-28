@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,9 +31,11 @@ class RecipeList extends StatefulWidget {
 
 class _RecipeListState extends State<RecipeList> {
   List<String> _favorites = [];
+  final List<String> _pendingRemove = [];
   List<Recipe> _recipesToDisplay = [];
   List<String> _keywords = [];
   late Future<SharedPreferences> _prefs;
+  Map<String, Timer> _removeTimers = {};
 
   @override
   void initState() {
@@ -41,14 +45,32 @@ class _RecipeListState extends State<RecipeList> {
   }
 
   void toogleFav(Recipe recipe) {
-    bool isFav = _favorites.contains(recipe.id);
+  bool isFav = _favorites.contains(recipe.id) && !_pendingRemove.contains(recipe.id);
     if (isFav) {
       removeSavedFavorite(recipe.id);
-      setState(() {
-        _favorites.remove(recipe.id);
-      });
+      if (widget.onlyFavorites) {
+        setState(() {
+          _pendingRemove.add(recipe.id);
+        });
+        _removeTimers[recipe.id] = Timer(const Duration(seconds: 3), () {
+          setState(() {
+            _favorites.remove(recipe.id);
+            _pendingRemove.remove(recipe.id);
+          });
+        });
+      } else {
+        setState(() {
+          _favorites.remove(recipe.id);
+        });
+      }
     } else {
       saveFavorite(recipe.id);
+      if (widget.onlyFavorites) {
+        _removeTimers[recipe.id]?.cancel();
+        setState(() {
+          _pendingRemove.remove(recipe.id);
+        });
+      }
       setState(() {
         _favorites.add(recipe.id);
       });
@@ -181,7 +203,7 @@ class _RecipeListState extends State<RecipeList> {
                   _favorites = prefs.getStringList('favorites') ?? [];
                   if (widget.onlyFavorites) {
                     _recipesToDisplay = recipes
-                        .where((recipe) => _favorites.contains(recipe.id))
+                        .where((recipe) => _favorites.contains(recipe.id) || _pendingRemove.contains(recipe.id))
                         .toList();
                     _recipesToDisplay.sort((a, b) => a.title.compareTo(b.title));
                   } else if (widget.categoryFilter != RecipeCategory.other) {
