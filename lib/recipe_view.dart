@@ -156,10 +156,12 @@ class _RecipeViewState extends State<RecipeView> {
                     onDoubleTap: () => setState(() {
                       _scaleFactor = 1.0;
                     }),
-                    child: Text(
-                      widget.recipe.description,
-                      style: TextStyle(
-                        fontSize: 16.0 * _scaleFactor,
+                    child: SelectionArea(
+                      child: Text(
+                        widget.recipe.description,
+                        style: TextStyle(
+                          fontSize: 16.0 * _scaleFactor,
+                        ),
                       ),
                     ),
                   ),
