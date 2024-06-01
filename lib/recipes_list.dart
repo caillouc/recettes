@@ -95,8 +95,10 @@ class _RecipeListState extends State<RecipeList> {
   int _filterScore(Recipe recipe, List<String> keywordsFilter) {
     int score = 0;
     String searchTitle = recipe.title.toLowerCase();
+    String searchSubTitle = recipe.subtitle.toLowerCase();
     String searchDescription = recipe.description.toLowerCase();
     searchTitle = removeDiacritics(searchTitle);
+    searchSubTitle = removeDiacritics(searchSubTitle);
     searchDescription = removeDiacritics(searchDescription);
 
     for (String k in keywordsFilter) {
@@ -104,7 +106,7 @@ class _RecipeListState extends State<RecipeList> {
       k = removeDiacritics(k);
       if (searchTitle.contains(k)) {
         score += 3;
-      } else if (searchDescription.contains(k)) {
+      } else if (searchDescription.contains(k) || searchSubTitle.contains(k)) {
         score += 1;
       } else {
         return 0;
