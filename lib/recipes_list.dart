@@ -104,6 +104,12 @@ class _RecipeListState extends State<RecipeList> {
     for (String k in keywordsFilter) {
       k = k.toLowerCase(); 
       k = removeDiacritics(k);
+      if (k.endsWith('s') && k.length > 1) {
+        k = k.substring(0, k.length - 1);
+      }
+      else if (k.endsWith('x') && k.length > 1) {
+        k = k.substring(0, k.length - 1);
+      }
       if (searchTitle.contains(k)) {
         score += 3;
       } else if (searchDescription.contains(k) || searchSubTitle.contains(k)) {

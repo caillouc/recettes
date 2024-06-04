@@ -5,6 +5,7 @@ import 'package:recettes/custom_icon.dart';
 import 'package:recettes/return_state.dart';
 import 'package:recettes/recipe.dart';
 import 'package:recettes/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RecipeView extends StatefulWidget {
   final Recipe recipe;
@@ -24,12 +25,17 @@ class RecipeView extends StatefulWidget {
 
 class _RecipeViewState extends State<RecipeView> {
   late bool isFavorite;
-  double _scaleFactor = 1.0;
+  late double _scaleFactor;
   double _baseScaleFactor = 1.0;
 
   @override
   void initState() {
     super.initState();
+    SharedPreferences.getInstance().then((prefs) {
+      setState(() {
+        _scaleFactor = prefs.getDouble('scaleFactor') ?? 1.0;
+      });
+    });
     isFavorite = widget.isFavorite;
   }
 
@@ -147,6 +153,11 @@ class _RecipeViewState extends State<RecipeView> {
                     onScaleStart: (details) {
                       _baseScaleFactor = _scaleFactor;
                     },
+                    onScaleEnd: (details) {
+                      SharedPreferences.getInstance().then((prefs) {
+                        prefs.setDouble('scaleFactor', _scaleFactor);
+                      });
+                    },
                     onScaleUpdate: (details) {
                       setState(() {
                         _scaleFactor =
@@ -155,6 +166,9 @@ class _RecipeViewState extends State<RecipeView> {
                     },
                     onDoubleTap: () => setState(() {
                       _scaleFactor = 1.0;
+                      SharedPreferences.getInstance().then((prefs) {
+                        prefs.setDouble('scaleFactor', _scaleFactor);
+                      });
                     }),
                     child: SelectionArea(
                       child: Text(
