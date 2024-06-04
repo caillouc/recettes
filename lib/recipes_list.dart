@@ -240,7 +240,13 @@ class _RecipeListState extends State<RecipeList> {
                     });
                   } else {
                     _recipesToDisplay = recipes;
-                    _recipesToDisplay.sort((a, b) => a.title.compareTo(b.title));
+                    // sort recipeToDisplay by title then by subtitle
+                    _recipesToDisplay.sort((a, b) {
+                      if (a.title != b.title) {
+                        return a.title.compareTo(b.title);
+                      }
+                      return a.subtitle.compareTo(b.subtitle);
+                    });
                   }
         
                   if (_recipesToDisplay.isEmpty) {
