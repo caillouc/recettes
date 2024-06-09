@@ -27,6 +27,7 @@ class _RecipeViewState extends State<RecipeView> {
   late bool isFavorite;
   late double _scaleFactor;
   double _baseScaleFactor = 1.0;
+  late bool _snackBarActive;
 
   @override
   void initState() {
@@ -37,6 +38,7 @@ class _RecipeViewState extends State<RecipeView> {
       });
     });
     isFavorite = widget.isFavorite;
+    _snackBarActive = false;
   }
 
   @override
@@ -112,7 +114,9 @@ class _RecipeViewState extends State<RecipeView> {
                     widget.recipe.category.getName(),
                     style: const TextStyle(fontSize: 20.0),
                   ),
-                  Expanded(child: Container(),),
+                  Expanded(
+                    child: Container(),
+                  ),
                   SizedBox(
                     height: 30.0,
                     width: 30.0,
@@ -123,15 +127,27 @@ class _RecipeViewState extends State<RecipeView> {
                         Icons.help_outline,
                       ),
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Pincez pour zoomer, Double-tapez pour réinitialiser',
-                              style: TextStyle(fontSize: 15.0),
-                            ),
-                            duration: Duration(seconds: 3),
-                          ),
-                        );
+                        // if snackbar is not already on
+                        if (_snackBarActive) {
+                          return;
+                        }
+                        _snackBarActive = true;
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Pincez pour zoomer, Double-tapez pour réinitialiser',
+                                  style: TextStyle(fontSize: 15.0),
+                                ),
+                                duration: Duration(seconds: 3),
+                              ),
+                            )
+                            .closed
+                            .then((reason) {
+                          setState(() {
+                            _snackBarActive = false;
+                          });
+                        });
                       },
                     ),
                   ),

@@ -280,8 +280,7 @@ class _RecipeListState extends State<RecipeList> {
                           return recipeTile(_recipesToDisplay[index ~/ 2]);
                         } else {
                           // For odd indices, return a separator
-                          return const SizedBox(
-                              height: 8); // Adjust separator height as needed
+                          return const SizedBox(height: 8);
                         }
                       },
                     ),
