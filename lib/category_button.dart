@@ -17,7 +17,7 @@ class CategoryButton extends StatelessWidget {
 
     return SizedBox(
       width: screenWidth * 0.4,
-      height: 100.0,
+      height: screenWidth * 0.2,
       child: ElevatedButton(
         onPressed: () {
           returnState.needReturn();
@@ -41,15 +41,17 @@ class CategoryButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(width: 8.0),
             category.getIcon(), // Assuming getIcon() returns IconData
             const SizedBox(width: 8.0),
             Text(
               category.getName(),
               style: const TextStyle(
-                fontSize: 18.0, // Increase text size
+                fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(width: 8.0),
           ],
         ),
       ),

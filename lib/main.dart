@@ -23,18 +23,20 @@ class RecetteApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Recette GM',
-      theme: ThemeData(
-        useMaterial3: true,
-        primarySwatch: Colors.amber,
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: Colors.amber,
-          foregroundColor: Colors.black,
+    return MediaQuery.withNoTextScaling(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Recette GM',
+        theme: ThemeData(
+          useMaterial3: true,
+          primarySwatch: Colors.amber,
+          floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            backgroundColor: Colors.amber,
+            foregroundColor: Colors.black,
+          ),
         ),
+        home: const MyHomePage(),
       ),
-      home: const MyHomePage(),
     );
   }
 }
