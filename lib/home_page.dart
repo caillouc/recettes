@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 import 'package:recettes/category_button.dart';
@@ -21,7 +22,8 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Center(
-              child: Text(
+              child: AutoSizeText(
+                maxLines: 1,
                 'Recettes GM',
                 style: TextStyle(
                   fontSize: 50.0,

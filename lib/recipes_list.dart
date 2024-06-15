@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:diacritic/diacritic.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 import 'package:recettes/recipe_view.dart';
 import 'package:recettes/return_state.dart';
@@ -46,8 +47,9 @@ class _RecipeListState extends State<RecipeList> {
   }
 
   void toogleFav(Recipe recipe) {
-  HapticFeedback.heavyImpact();
-  bool isFav = _favorites.contains(recipe.id) && !_pendingRemove.contains(recipe.id);
+    HapticFeedback.heavyImpact();
+    bool isFav =
+        _favorites.contains(recipe.id) && !_pendingRemove.contains(recipe.id);
     if (isFav) {
       removeSavedFavorite(recipe.id);
       if (widget.onlyFavorites) {
@@ -102,12 +104,11 @@ class _RecipeListState extends State<RecipeList> {
     searchDescription = removeDiacritics(searchDescription);
 
     for (String k in keywordsFilter) {
-      k = k.toLowerCase(); 
+      k = k.toLowerCase();
       k = removeDiacritics(k);
       if (k.endsWith('s') && k.length > 1) {
         k = k.substring(0, k.length - 1);
-      }
-      else if (k.endsWith('x') && k.length > 1) {
+      } else if (k.endsWith('x') && k.length > 1) {
         k = k.substring(0, k.length - 1);
       }
       if (searchTitle.contains(k)) {
@@ -127,10 +128,11 @@ class _RecipeListState extends State<RecipeList> {
       opacity: _pendingRemove.contains(recipe.id) ? 0.0 : 1.0,
       duration: Duration(seconds: _pendingRemove.contains(recipe.id) ? 3 : 0),
       child: ListTile(
-        title: Text(
+        title: AutoSizeText(
+          maxLines: 2,
           recipe.title,
           style: const TextStyle(
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -163,7 +165,7 @@ class _RecipeListState extends State<RecipeList> {
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvoked: (didPop) {
-        if (didPop){
+        if (didPop) {
           widget.returnState.returnPressed();
         }
       },
@@ -182,9 +184,13 @@ class _RecipeListState extends State<RecipeList> {
                     children: _keywords
                         .map(
                           (keyword) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 5.0, vertical: 5.0),
                             child: Chip(
-                              label: Text(keyword, style: const TextStyle(fontSize: 25.0),),
+                              label: Text(
+                                keyword,
+                                style: const TextStyle(fontSize: 25.0),
+                              ),
                               deleteIcon: const Icon(Icons.cancel),
                               onDeleted: () {
                                 setState(() {
@@ -199,9 +205,7 @@ class _RecipeListState extends State<RecipeList> {
                         )
                         .toList(),
                   ),
-            _keywords.isNotEmpty
-                ? const Divider()
-                : const SizedBox(),
+            _keywords.isNotEmpty ? const Divider() : const SizedBox(),
             Expanded(
               child: FutureBuilder(
                 future: _prefs,
@@ -210,21 +214,27 @@ class _RecipeListState extends State<RecipeList> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (snapshot.hasError) {
-                    return const Center(child: Text('Error loading preferences'));
+                    return const Center(
+                        child: Text('Error loading preferences'));
                   }
-        
+
                   final prefs = snapshot.data!;
                   _favorites = prefs.getStringList('favorites') ?? [];
                   if (widget.onlyFavorites) {
                     _recipesToDisplay = recipes
-                        .where((recipe) => _favorites.contains(recipe.id) || _pendingRemove.contains(recipe.id))
+                        .where((recipe) =>
+                            _favorites.contains(recipe.id) ||
+                            _pendingRemove.contains(recipe.id))
                         .toList();
-                    _recipesToDisplay.sort((a, b) => a.title.compareTo(b.title));
+                    _recipesToDisplay
+                        .sort((a, b) => a.title.compareTo(b.title));
                   } else if (widget.categoryFilter != RecipeCategory.other) {
                     _recipesToDisplay = recipes
-                        .where((recipe) => recipe.category == widget.categoryFilter)
+                        .where((recipe) =>
+                            recipe.category == widget.categoryFilter)
                         .toList();
-                    _recipesToDisplay.sort((a, b) => a.title.compareTo(b.title));
+                    _recipesToDisplay
+                        .sort((a, b) => a.title.compareTo(b.title));
                   } else if (_keywords.isNotEmpty) {
                     _recipesToDisplay = recipes
                         .where((recipe) => _filterScore(recipe, _keywords) > 0)
@@ -248,7 +258,7 @@ class _RecipeListState extends State<RecipeList> {
                       return a.subtitle.compareTo(b.subtitle);
                     });
                   }
-        
+
                   if (_recipesToDisplay.isEmpty) {
                     String message = "";
                     if (widget.onlyFavorites) {
@@ -256,7 +266,8 @@ class _RecipeListState extends State<RecipeList> {
                     } else if (_keywords.isNotEmpty) {
                       message = 'Pas de recette pour les mots-clés recherchés';
                     } else {
-                      message = 'Pas de recette (Je suis curieux de savoir comment vous avez fait pour arriver ici)';
+                      message =
+                          'Pas de recette (Je suis curieux de savoir comment vous avez fait pour arriver ici)';
                     }
                     return Center(
                       child: Padding(

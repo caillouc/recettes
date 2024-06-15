@@ -26,7 +26,7 @@ class RecetteApp extends StatelessWidget {
     return MediaQuery.withNoTextScaling(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Recette GM',
+        title: 'Recettes GM',
         theme: ThemeData(
           useMaterial3: true,
           primarySwatch: Colors.amber,

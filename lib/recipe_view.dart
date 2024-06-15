@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -54,32 +55,20 @@ class _RecipeViewState extends State<RecipeView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(10.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.recipe.title,
-                          style: const TextStyle(
-                            fontSize: 35.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.visible,
-                          softWrap: true,
-                        ),
-                        const SizedBox(height: 4.0),
-                        Text(
-                          widget.recipe.subtitle,
-                          style: const TextStyle(
-                            fontSize: 20.0,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
+                    child: AutoSizeText(
+                      widget.recipe.title,
+                      maxLines: 2,
+                      style: const TextStyle(
+                        fontSize: 35.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.visible,
+                      softWrap: true,
                     ),
                   ),
                   IconButton(
@@ -105,18 +94,26 @@ class _RecipeViewState extends State<RecipeView> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Row(
                 children: [
                   widget.recipe.category.getIcon(),
-                  const SizedBox(width: 8.0),
-                  Text(
-                    widget.recipe.category.getName(),
-                    style: const TextStyle(fontSize: 20.0),
-                  ),
+                  const SizedBox(width: 10.0),
+                  // Text(
+                  //   widget.recipe.category.getName(),
+                  //   style: const TextStyle(fontSize: 20.0),
+                  // ),
                   Expanded(
-                    child: Container(),
+                    child: AutoSizeText(
+                      maxLines: 1,
+                      widget.recipe.subtitle,
+                      style: const TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ),
+                  const SizedBox(width: 10.0),
                   SizedBox(
                     height: 30.0,
                     width: 30.0,
