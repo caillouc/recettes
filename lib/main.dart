@@ -165,8 +165,8 @@ class _MyHomePageState extends State<MyHomePage>
             label: 'Recettes',
           ),
           NavigationDestination(
-            icon: CustomIcon.list.getBlackOutlinedIcon(),
-            selectedIcon: CustomIcon.list.getBlackSolidIcon(),
+            icon: CustomIcon.history.getBlackOutlinedIcon(),
+            selectedIcon: CustomIcon.history.getBlackSolidIcon(),
             label: 'Historique',
           ),
           NavigationDestination(

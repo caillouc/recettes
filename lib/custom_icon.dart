@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 enum CustomIcon {
   favorite,
+  history,
   home,
   search,
   list,
@@ -26,6 +27,7 @@ enum CustomIcon {
   // create map for icon to color
   static final Map<CustomIcon, Color> _iconColor = {
     CustomIcon.favorite: Colors.amber,
+    CustomIcon.history:Colors.black,
     CustomIcon.home: Colors.black,
     CustomIcon.search: Colors.black,
     CustomIcon.list: Colors.black,
@@ -40,6 +42,7 @@ enum CustomIcon {
 
   static final Map<CustomIcon, String> _iconBaseName = {
     CustomIcon.favorite: 'star',
+    CustomIcon.history: 'folder-magnifying-glass',
     CustomIcon.home: 'home',
     CustomIcon.search: 'magnifying-glass',
     CustomIcon.list: 'list',
