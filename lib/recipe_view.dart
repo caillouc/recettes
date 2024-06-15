@@ -26,7 +26,7 @@ class RecipeView extends StatefulWidget {
 
 class _RecipeViewState extends State<RecipeView> {
   late bool isFavorite;
-  late double _scaleFactor;
+  late double _scaleFactor = 1.0;
   double _baseScaleFactor = 1.0;
   late bool _snackBarActive;
 

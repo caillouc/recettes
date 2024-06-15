@@ -53,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage>
   int _currentPageIndex = 0;
   final ReturnState _returnState = ReturnState();
   late BuildContext _navigatorContext;
+  late PageController _pageController;
 
   @override
   void initState() {
@@ -65,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage>
     fetchRecipesFromJson().then((value) {
       recipes = value;
     });
+    _pageController = PageController(initialPage: _currentPageIndex);
   }
 
   Future<List<Recipe>> fetchRecipesFromJson() async {
@@ -110,6 +112,21 @@ class _MyHomePageState extends State<MyHomePage>
   void _onDestinationSelected(int index) {
     HapticFeedback.selectionClick();
     if (_currentPageIndex != index) {
+      if (!_returnState.returnNeeded()){
+        _pageController.animateToPage(
+          index,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else {
+        _pageController.jumpToPage(index);
+      }
+    }
+    _onPageChanged(index);
+  }
+
+  void _onPageChanged(int index) {
+    if (_currentPageIndex != index) {
       setState(() {
         _currentPageIndex = index;
       });
@@ -117,7 +134,21 @@ class _MyHomePageState extends State<MyHomePage>
     while (Navigator.of(_navigatorContext).canPop()) {
       Navigator.of(_navigatorContext).pop();
     }
+
     _returnState.reset();
+  }
+
+  Widget _buildNavigator(Widget page) {
+    return Navigator(
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(
+          builder: (context) {
+            _navigatorContext = context;
+            return page;
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -146,19 +177,18 @@ class _MyHomePageState extends State<MyHomePage>
         ],
       ),
       body: SafeArea(
-        child: Navigator(
-          onGenerateRoute: (settings) {
-            return MaterialPageRoute(
-              builder: (context) {
-                _navigatorContext = context;
-                return [
-                  HomePage(returnState: _returnState),
-                  RecipeList(returnState: _returnState),
-                  RecipeList(returnState: _returnState, onlyFavorites: true),
-                ][_currentPageIndex];
-              },
-            );
-          },
+        child: PageView(
+          controller: _pageController,
+          // disable swipe when needReturn is true
+          physics: _returnState.returnNeeded()
+              ? const NeverScrollableScrollPhysics()
+              : const AlwaysScrollableScrollPhysics(),
+          onPageChanged: _onPageChanged,
+          children: <Widget>[
+            _buildNavigator(HomePage(returnState: _returnState)),
+            _buildNavigator(RecipeList(returnState: _returnState)),
+            _buildNavigator(RecipeList(returnState: _returnState, onlyFavorites: true)),
+          ],
         ),
       ),
       floatingActionButton: _returnState.returnNeeded()
