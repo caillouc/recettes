@@ -86,6 +86,12 @@ class _RecipeListState extends State<RecipeList> {
 
   void onRecipePressed(Recipe recipe) {
     widget.returnState.needReturn();
+    if (_history.length > 50) {
+      setState(() {
+        _history.removeAt(0);
+      });
+    }
+    
     if (_history.contains(recipe.id)) {
       setState(() {
         _history.remove(recipe.id);
