@@ -281,19 +281,21 @@ class _RecipeListState extends State<RecipeList> {
                     );
                   }
                   return Material(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(8),
-                      itemCount: _recipesToDisplay.length * 2 -
-                          1, // Double the item count to include separators
-                      itemBuilder: (BuildContext context, int index) {
-                        // For even indices, return recipeTile
-                        if (index.isEven) {
-                          return recipeTile(_recipesToDisplay[index ~/ 2]);
-                        } else {
-                          // For odd indices, return a separator
-                          return const SizedBox(height: 8);
-                        }
-                      },
+                    child: Scrollbar(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: _recipesToDisplay.length * 2 -
+                            1, // Double the item count to include separators
+                        itemBuilder: (BuildContext context, int index) {
+                          // For even indices, return recipeTile
+                          if (index.isEven) {
+                            return recipeTile(_recipesToDisplay[index ~/ 2]);
+                          } else {
+                            // For odd indices, return a separator
+                            return const SizedBox(height: 8);
+                          }
+                        },
+                      ),
                     ),
                   );
                 },
