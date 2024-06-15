@@ -18,6 +18,7 @@ class RecipeList extends StatefulWidget {
   final ReturnState returnState;
   final RecipeCategory categoryFilter;
   final List<String> keywordsFilter;
+  final bool history;
 
   const RecipeList({
     Key? key,
@@ -25,6 +26,7 @@ class RecipeList extends StatefulWidget {
     this.onlyFavorites = false,
     this.categoryFilter = RecipeCategory.other,
     this.keywordsFilter = const [],
+    this.history = false,
   }) : super(key: key);
 
   @override
@@ -33,6 +35,7 @@ class RecipeList extends StatefulWidget {
 
 class _RecipeListState extends State<RecipeList> {
   List<String> _favorites = [];
+  List<String> _history = [];
   final List<String> _pendingRemove = [];
   List<Recipe> _recipesToDisplay = [];
   List<String> _keywords = [];
@@ -83,6 +86,17 @@ class _RecipeListState extends State<RecipeList> {
 
   void onRecipePressed(Recipe recipe) {
     widget.returnState.needReturn();
+    if (_history.contains(recipe.id)) {
+      setState(() {
+        _history.remove(recipe.id);
+      });
+    }
+    setState(() {
+      _history.add(recipe.id);
+    });
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setStringList('history', _history);
+    });
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => RecipeView(
@@ -126,7 +140,8 @@ class _RecipeListState extends State<RecipeList> {
     bool isFav = _favorites.contains(recipe.id);
     return AnimatedOpacity(
       opacity: _pendingRemove.contains(recipe.id) ? 0.0 : 1.0,
-      duration: Duration(milliseconds: _pendingRemove.contains(recipe.id) ? 1500 : 0),
+      duration:
+          Duration(milliseconds: _pendingRemove.contains(recipe.id) ? 1500 : 0),
       child: ListTile(
         title: AutoSizeText(
           maxLines: 2,
@@ -169,140 +184,150 @@ class _RecipeListState extends State<RecipeList> {
           widget.returnState.returnPressed();
         }
       },
-      child: Card(
-        shadowColor: Colors.transparent,
-        color: Theme.of(context).scaffoldBackgroundColor,
-        margin: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            _keywords.isNotEmpty
-                ? const SizedBox(height: 10)
-                : const SizedBox(),
-            _keywords.isEmpty
-                ? const SizedBox()
-                : Wrap(
-                    children: _keywords
-                        .map(
-                          (keyword) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 5.0, vertical: 5.0),
-                            child: Chip(
-                              label: Text(
-                                keyword,
-                                style: const TextStyle(fontSize: 25.0),
-                              ),
-                              deleteIcon: const Icon(Icons.cancel),
-                              onDeleted: () {
-                                setState(() {
-                                  _keywords.remove(keyword);
-                                });
-                                if (_keywords.isEmpty) {
-                                  Navigator.of(context).pop();
-                                }
-                              },
+      child: Column(
+        children: [
+          const SizedBox(height: 10),
+          _keywords.isEmpty
+              ? AutoSizeText(
+                  maxLines: 1,
+                  widget.onlyFavorites
+                      ? 'Favoris'
+                      : widget.history
+                          ? 'Historique'
+                          : 'Toutes les recettes',
+                  style: const TextStyle(fontSize: 30.0),
+                )
+              : Wrap(
+                  children: _keywords
+                      .map(
+                        (keyword) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 5.0, vertical: 5.0),
+                          child: Chip(
+                            label: Text(
+                              keyword,
+                              style: const TextStyle(fontSize: 25.0),
                             ),
+                            deleteIcon: const Icon(Icons.cancel),
+                            onDeleted: () {
+                              setState(() {
+                                _keywords.remove(keyword);
+                              });
+                              if (_keywords.isEmpty) {
+                                Navigator.of(context).pop();
+                              }
+                            },
                           ),
-                        )
-                        .toList(),
-                  ),
-            _keywords.isNotEmpty ? const Divider() : const SizedBox(),
-            Expanded(
-              child: FutureBuilder(
-                future: _prefs,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (snapshot.hasError) {
-                    return const Center(
-                        child: Text('Error loading preferences'));
-                  }
-
-                  final prefs = snapshot.data!;
-                  _favorites = prefs.getStringList('favorites') ?? [];
-                  if (widget.onlyFavorites) {
-                    _recipesToDisplay = recipes
-                        .where((recipe) =>
-                            _favorites.contains(recipe.id) ||
-                            _pendingRemove.contains(recipe.id))
-                        .toList();
-                    _recipesToDisplay
-                        .sort((a, b) => a.title.compareTo(b.title));
-                  } else if (widget.categoryFilter != RecipeCategory.other) {
-                    _recipesToDisplay = recipes
-                        .where((recipe) =>
-                            recipe.category == widget.categoryFilter)
-                        .toList();
-                    _recipesToDisplay
-                        .sort((a, b) => a.title.compareTo(b.title));
-                  } else if (_keywords.isNotEmpty) {
-                    _recipesToDisplay = recipes
-                        .where((recipe) => _filterScore(recipe, _keywords) > 0)
-                        .toList();
-                    // sort recipeToDisplay by filterScore and then by title
-                    _recipesToDisplay.sort((a, b) {
-                      int scoreA = _filterScore(a, _keywords);
-                      int scoreB = _filterScore(b, _keywords);
-                      if (scoreA != scoreB) {
-                        return scoreB - scoreA;
-                      }
-                      return a.title.compareTo(b.title);
-                    });
-                  } else {
-                    _recipesToDisplay = recipes;
-                    // sort recipeToDisplay by title then by subtitle
-                    _recipesToDisplay.sort((a, b) {
-                      if (a.title != b.title) {
-                        return a.title.compareTo(b.title);
-                      }
-                      return a.subtitle.compareTo(b.subtitle);
-                    });
-                  }
-
-                  if (_recipesToDisplay.isEmpty) {
-                    String message = "";
-                    if (widget.onlyFavorites) {
-                      message = 'Vous n\'avez pas de favoris';
-                    } else if (_keywords.isNotEmpty) {
-                      message = 'Pas de recette pour les mots-clés recherchés';
-                    } else {
-                      message =
-                          'Pas de recette (Je suis curieux de savoir comment vous avez fait pour arriver ici)';
-                    }
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(50.0),
-                        child: Text(
-                          message,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 20),
                         ),
-                      ),
-                    );
+                      )
+                      .toList(),
+                ),
+          const Divider(),
+          Expanded(
+            child: FutureBuilder(
+              future: _prefs,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return const Center(child: Text('Error loading preferences'));
+                }
+
+                final prefs = snapshot.data!;
+                _favorites = prefs.getStringList('favorites') ?? [];
+                _history = prefs.getStringList('history') ?? [];
+                if (widget.onlyFavorites) {
+                  _recipesToDisplay = recipes
+                      .where((recipe) =>
+                          _favorites.contains(recipe.id) ||
+                          _pendingRemove.contains(recipe.id))
+                      .toList();
+                  _recipesToDisplay.sort((a, b) => a.title.compareTo(b.title));
+                } else if (widget.history) {
+                  _recipesToDisplay = recipes
+                      .where((recipe) => _history.contains(recipe.id))
+                      .toList();
+                  _recipesToDisplay.sort((a, b) {
+                    int indexA = _history.indexOf(a.id);
+                    int indexB = _history.indexOf(b.id);
+                    return indexB - indexA;
+                  });
+                } else if (widget.categoryFilter != RecipeCategory.other) {
+                  _recipesToDisplay = recipes
+                      .where(
+                          (recipe) => recipe.category == widget.categoryFilter)
+                      .toList();
+                  _recipesToDisplay.sort((a, b) => a.title.compareTo(b.title));
+                } else if (_keywords.isNotEmpty) {
+                  _recipesToDisplay = recipes
+                      .where((recipe) => _filterScore(recipe, _keywords) > 0)
+                      .toList();
+                  // sort recipeToDisplay by filterScore and then by title
+                  _recipesToDisplay.sort((a, b) {
+                    int scoreA = _filterScore(a, _keywords);
+                    int scoreB = _filterScore(b, _keywords);
+                    if (scoreA != scoreB) {
+                      return scoreB - scoreA;
+                    }
+                    return a.title.compareTo(b.title);
+                  });
+                } else {
+                  _recipesToDisplay = recipes;
+                  // sort recipeToDisplay by title then by subtitle
+                  _recipesToDisplay.sort((a, b) {
+                    if (a.title != b.title) {
+                      return a.title.compareTo(b.title);
+                    }
+                    return a.subtitle.compareTo(b.subtitle);
+                  });
+                }
+
+                if (_recipesToDisplay.isEmpty) {
+                  String message = "";
+                  if (widget.onlyFavorites) {
+                    message = 'Vous n\'avez pas de favoris';
+                  } else if (widget.history) {
+                    message = 'Vous n\'avez pas encore cliqué sur une recette';
+                  } else if (_keywords.isNotEmpty) {
+                    message = 'Pas de recette pour les mots-clés recherchés';
+                  } else {
+                    message =
+                        'Pas de recette (Je suis curieux de savoir comment vous avez fait pour arriver ici)';
                   }
-                  return Material(
-                    child: Scrollbar(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(8),
-                        itemCount: _recipesToDisplay.length * 2 -
-                            1, // Double the item count to include separators
-                        itemBuilder: (BuildContext context, int index) {
-                          // For even indices, return recipeTile
-                          if (index.isEven) {
-                            return recipeTile(_recipesToDisplay[index ~/ 2]);
-                          } else {
-                            // For odd indices, return a separator
-                            return const SizedBox(height: 8);
-                          }
-                        },
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(50.0),
+                      child: Text(
+                        message,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 20),
                       ),
                     ),
                   );
-                },
-              ),
+                }
+                return Material(
+                  child: Scrollbar(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: _recipesToDisplay.length * 2 -
+                          1, // Double the item count to include separators
+                      itemBuilder: (BuildContext context, int index) {
+                        // For even indices, return recipeTile
+                        if (index.isEven) {
+                          return recipeTile(_recipesToDisplay[index ~/ 2]);
+                        } else {
+                          // For odd indices, return a separator
+                          return const SizedBox(height: 8);
+                        }
+                      },
+                    ),
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

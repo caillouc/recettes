@@ -112,30 +112,25 @@ class _MyHomePageState extends State<MyHomePage>
   void _onDestinationSelected(int index) {
     HapticFeedback.selectionClick();
     if (_currentPageIndex != index) {
-      if (!_returnState.returnNeeded()){
-        _pageController.animateToPage(
-          index,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      } else {
-        _pageController.jumpToPage(index);
-      }
-    }
-    _onPageChanged(index);
-  }
-
-  void _onPageChanged(int index) {
-    if (_currentPageIndex != index) {
       setState(() {
         _currentPageIndex = index;
       });
+
+      // do the animation
+      _pageController.jumpToPage(index);
     }
+
     while (Navigator.of(_navigatorContext).canPop()) {
       Navigator.of(_navigatorContext).pop();
     }
 
     _returnState.reset();
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _currentPageIndex = index;
+    });
   }
 
   Widget _buildNavigator(Widget page) {
@@ -167,7 +162,12 @@ class _MyHomePageState extends State<MyHomePage>
           NavigationDestination(
             icon: CustomIcon.list.getBlackOutlinedIcon(),
             selectedIcon: CustomIcon.list.getBlackSolidIcon(),
-            label: 'Toutes les recettes',
+            label: 'Recettes',
+          ),
+          NavigationDestination(
+            icon: CustomIcon.list.getBlackOutlinedIcon(),
+            selectedIcon: CustomIcon.list.getBlackSolidIcon(),
+            label: 'Historique',
           ),
           NavigationDestination(
             icon: CustomIcon.favorite.getBlackOutlinedIcon(),
@@ -187,7 +187,12 @@ class _MyHomePageState extends State<MyHomePage>
           children: <Widget>[
             _buildNavigator(HomePage(returnState: _returnState)),
             _buildNavigator(RecipeList(returnState: _returnState)),
-            _buildNavigator(RecipeList(returnState: _returnState, onlyFavorites: true)),
+            _buildNavigator(RecipeList(
+              returnState: _returnState,
+              history: true,
+            )),
+            _buildNavigator(
+                RecipeList(returnState: _returnState, onlyFavorites: true)),
           ],
         ),
       ),
