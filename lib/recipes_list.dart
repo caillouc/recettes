@@ -126,7 +126,7 @@ class _RecipeListState extends State<RecipeList> {
     bool isFav = _favorites.contains(recipe.id);
     return AnimatedOpacity(
       opacity: _pendingRemove.contains(recipe.id) ? 0.0 : 1.0,
-      duration: Duration(seconds: _pendingRemove.contains(recipe.id) ? 3 : 0),
+      duration: Duration(milliseconds: _pendingRemove.contains(recipe.id) ? 1500 : 0),
       child: ListTile(
         title: AutoSizeText(
           maxLines: 2,
