@@ -120,7 +120,7 @@ class _RecipeViewState extends State<RecipeView> {
                               const SnackBar(
                                 content: Text(
                                   'Pincez pour zoomer, Tapez deux fois pour réinitialiser',
-                                  style: TextStyle(fontSize: 15.0),
+                                  style: TextStyle(fontSize: 17.0),
                                 ),
                                 duration: Duration(seconds: 3),
                               ),

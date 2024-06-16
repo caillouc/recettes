@@ -152,6 +152,7 @@ class _RecipeListState extends State<RecipeList> {
           ),
         ),
         subtitle: AutoSizeText(
+          maxLines: 1,
           recipe.subtitle,
           style: const TextStyle(fontSize: 16, color: Colors.grey),
         ),
