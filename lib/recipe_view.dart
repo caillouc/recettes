@@ -99,10 +99,6 @@ class _RecipeViewState extends State<RecipeView> {
                 children: [
                   widget.recipe.category.getIcon(),
                   const SizedBox(width: 10.0),
-                  // Text(
-                  //   widget.recipe.category.getName(),
-                  //   style: const TextStyle(fontSize: 20.0),
-                  // ),
                   Expanded(
                     child: AutoSizeText(
                       maxLines: 1,

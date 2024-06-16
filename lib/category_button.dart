@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 import 'package:recettes/recipe.dart';
@@ -44,7 +45,7 @@ class CategoryButton extends StatelessWidget {
             const SizedBox(width: 8.0),
             category.getIcon(), // Assuming getIcon() returns IconData
             const SizedBox(width: 8.0),
-            Text(
+            AutoSizeText(
               category.getName(),
               style: const TextStyle(
                 fontSize: 18.0,

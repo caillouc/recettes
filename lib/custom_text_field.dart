@@ -27,6 +27,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
       return;
     }
     List<String> keywords = _textEditingController.text.trim().split(' ');
+    // remove duplicates and empty strings and keep the 10 first keywords
+    keywords = keywords.toSet().where((element) => element.isNotEmpty).take(10).toList();
     widget.returnState.needReturn();
     Navigator.of(context).push(
       MaterialPageRoute(
