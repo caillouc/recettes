@@ -3,21 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:recettes/custom_icon.dart';
-import 'package:recettes/return_state.dart';
 import 'package:recettes/recipe.dart';
 import 'package:recettes/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RecipeView extends StatefulWidget {
   final Recipe recipe;
-  final bool isFavorite;
-  final ReturnState returnState;
 
   const RecipeView(
       {Key? key,
-      required this.recipe,
-      required this.isFavorite,
-      required this.returnState})
+      required this.recipe})
       : super(key: key);
 
   @override
@@ -25,7 +20,6 @@ class RecipeView extends StatefulWidget {
 }
 
 class _RecipeViewState extends State<RecipeView> {
-  late bool isFavorite;
   late double _scaleFactor = 1.0;
   double _baseScaleFactor = 1.0;
   late bool _snackBarActive;
@@ -33,12 +27,16 @@ class _RecipeViewState extends State<RecipeView> {
   @override
   void initState() {
     super.initState();
+    favoriteRecipes.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
         _scaleFactor = prefs.getDouble('scaleFactor') ?? 1.0;
       });
     });
-    isFavorite = widget.isFavorite;
     _snackBarActive = false;
   }
 
@@ -46,7 +44,7 @@ class _RecipeViewState extends State<RecipeView> {
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvoked: (didPop) {
-        widget.returnState.returnPressed();
+        returnState.returnPressed();
       },
       child: Card(
         shadowColor: Colors.transparent,
@@ -72,22 +70,16 @@ class _RecipeViewState extends State<RecipeView> {
                     ),
                   ),
                   IconButton(
-                    icon: isFavorite
+                    icon: favoriteRecipes.isFavorite(widget.recipe.id)
                         ? CustomIcon.favorite.getColorSolidBigIcon()
                         : CustomIcon.favorite.getColorOutlinedBigIcon(),
                     onPressed: () {
                       HapticFeedback.heavyImpact();
-                      if (isFavorite) {
-                        removeSavedFavorite(widget.recipe.id);
+                      if (favoriteRecipes.isFavorite(widget.recipe.id)) {
+                        favoriteRecipes.removeFavorite(widget.recipe.id);
                       } else {
-                        saveFavorite(widget.recipe.id);
+                        favoriteRecipes.addFavorite(widget.recipe.id);
                       }
-                      setState(
-                        () {
-                          isFavorite = !isFavorite;
-                        },
-                      );
-                      // Toggle favorite status here
                     },
                   ),
                 ],
@@ -129,7 +121,7 @@ class _RecipeViewState extends State<RecipeView> {
                             .showSnackBar(
                               const SnackBar(
                                 content: Text(
-                                  'Pincez pour zoomer, Double-tapez pour réinitialiser',
+                                  'Pincez pour zoomer, Tapez deux fois pour réinitialiser',
                                   style: TextStyle(fontSize: 15.0),
                                 ),
                                 duration: Duration(seconds: 3),

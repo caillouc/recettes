@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:recettes/return_state.dart';
 import 'package:recettes/recipes_list.dart';
+import 'package:recettes/main.dart';
 
 class CustomTextField extends StatefulWidget {
-  final ReturnState returnState;
-
-  const CustomTextField({Key? key, required this.returnState}) : super(key: key);
+  const CustomTextField({Key? key}) : super(key: key);
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -29,11 +27,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
     List<String> keywords = _textEditingController.text.trim().split(' ');
     // remove duplicates and empty strings and keep the 10 first keywords
     keywords = keywords.toSet().where((element) => element.isNotEmpty).take(10).toList();
-    widget.returnState.needReturn();
+    returnState.needReturn();
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => RecipeList(
-          returnState: widget.returnState,
           keywordsFilter: keywords,
         ),
       ),

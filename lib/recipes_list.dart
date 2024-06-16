@@ -8,21 +8,18 @@ import 'package:diacritic/diacritic.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 import 'package:recettes/recipe_view.dart';
-import 'package:recettes/return_state.dart';
 import 'package:recettes/custom_icon.dart';
 import 'package:recettes/recipe.dart';
 import 'package:recettes/main.dart';
 
 class RecipeList extends StatefulWidget {
   final bool onlyFavorites;
-  final ReturnState returnState;
   final RecipeCategory categoryFilter;
   final List<String> keywordsFilter;
   final bool history;
 
   const RecipeList({
     Key? key,
-    required this.returnState,
     this.onlyFavorites = false,
     this.categoryFilter = RecipeCategory.other,
     this.keywordsFilter = const [],
@@ -34,7 +31,6 @@ class RecipeList extends StatefulWidget {
 }
 
 class _RecipeListState extends State<RecipeList> {
-  List<String> _favorites = [];
   List<String> _history = [];
   final List<String> _pendingRemove = [];
   List<Recipe> _recipesToDisplay = [];
@@ -46,6 +42,11 @@ class _RecipeListState extends State<RecipeList> {
   @override
   void initState() {
     super.initState();
+    favoriteRecipes.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
     _prefs = SharedPreferences.getInstance();
     _keywords = widget.keywordsFilter;
   }
@@ -53,40 +54,34 @@ class _RecipeListState extends State<RecipeList> {
   void toogleFav(Recipe recipe) {
     HapticFeedback.heavyImpact();
     bool isFav =
-        _favorites.contains(recipe.id) && !_pendingRemove.contains(recipe.id);
+        favoriteRecipes.isFavorite(recipe.id) && !_pendingRemove.contains(recipe.id);
     if (isFav) {
-      removeSavedFavorite(recipe.id);
       if (widget.onlyFavorites) {
+        favoriteRecipes.removeFavorite(recipe.id);
         setState(() {
           _pendingRemove.add(recipe.id);
         });
         _removeTimers[recipe.id] = Timer(Duration(milliseconds: _removeDelay), () {
           setState(() {
-            _favorites.remove(recipe.id);
             _pendingRemove.remove(recipe.id);
           });
         });
       } else {
-        setState(() {
-          _favorites.remove(recipe.id);
-        });
+        favoriteRecipes.removeFavorite(recipe.id);
       }
     } else {
-      saveFavorite(recipe.id);
+      favoriteRecipes.addFavorite(recipe.id);
       if (widget.onlyFavorites) {
         _removeTimers[recipe.id]?.cancel();
         setState(() {
           _pendingRemove.remove(recipe.id);
         });
       }
-      setState(() {
-        _favorites.add(recipe.id);
-      });
     }
   }
 
   void onRecipePressed(Recipe recipe) {
-    widget.returnState.needReturn();
+    returnState.needReturn();
     if (_history.length > 50) {
       setState(() {
         _history.removeAt(0);
@@ -108,8 +103,6 @@ class _RecipeListState extends State<RecipeList> {
       MaterialPageRoute(
         builder: (context) => RecipeView(
           recipe: recipe,
-          isFavorite: _favorites.contains(recipe.id),
-          returnState: widget.returnState,
         ),
       ),
     );
@@ -144,7 +137,7 @@ class _RecipeListState extends State<RecipeList> {
   }
 
   Widget recipeTile(Recipe recipe) {
-    bool isFav = _favorites.contains(recipe.id);
+    bool isFav = favoriteRecipes.isFavorite(recipe.id);
     return AnimatedOpacity(
       opacity: _pendingRemove.contains(recipe.id) ? 0.0 : 1.0,
       duration:
@@ -188,7 +181,7 @@ class _RecipeListState extends State<RecipeList> {
     return PopScope(
       onPopInvoked: (didPop) {
         if (didPop) {
-          widget.returnState.returnPressed();
+          returnState.returnPressed();
         }
       },
       child: Card(
@@ -250,12 +243,11 @@ class _RecipeListState extends State<RecipeList> {
                   }
         
                   final prefs = snapshot.data!;
-                  _favorites = prefs.getStringList('favorites') ?? [];
                   _history = prefs.getStringList('history') ?? [];
                   if (widget.onlyFavorites) {
                     _recipesToDisplay = recipes
                         .where((recipe) =>
-                            _favorites.contains(recipe.id) ||
+                            favoriteRecipes.isFavorite(recipe.id) ||
                             _pendingRemove.contains(recipe.id))
                         .toList();
                     _recipesToDisplay.sort((a, b) => a.title.compareTo(b.title));

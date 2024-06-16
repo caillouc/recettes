@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:recettes/favorite_recipes.dart';
 
 import 'dart:convert';
-
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:recettes/home_page.dart';
 import 'package:recettes/recipes_list.dart';
@@ -16,6 +15,8 @@ void main() {
 }
 
 List<Recipe> recipes = List.empty();
+final ReturnState returnState = ReturnState();
+final FavoriteRecipes favoriteRecipes = FavoriteRecipes();
 
 class RecetteApp extends StatelessWidget {
   const RecetteApp({super.key});
@@ -51,14 +52,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
   int _currentPageIndex = 0;
-  final ReturnState _returnState = ReturnState();
   late BuildContext _navigatorContext;
   late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    _returnState.addListener(() {
+    favoriteRecipes.initFavorites();
+    returnState.addListener(() {
       if (mounted) {
         setState(() {});
       }
@@ -124,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage>
       Navigator.of(_navigatorContext).pop();
     }
 
-    _returnState.reset();
+    returnState.reset();
   }
 
   void _onPageChanged(int index) {
@@ -180,23 +181,19 @@ class _MyHomePageState extends State<MyHomePage>
         child: PageView(
           controller: _pageController,
           // disable swipe when needReturn is true
-          physics: _returnState.returnNeeded()
+          physics: returnState.returnNeeded()
               ? const NeverScrollableScrollPhysics()
               : const AlwaysScrollableScrollPhysics(),
           onPageChanged: _onPageChanged,
           children: <Widget>[
-            _buildNavigator(HomePage(returnState: _returnState)),
-            _buildNavigator(RecipeList(returnState: _returnState)),
-            _buildNavigator(RecipeList(
-              returnState: _returnState,
-              history: true,
-            )),
-            _buildNavigator(
-                RecipeList(returnState: _returnState, onlyFavorites: true)),
+            _buildNavigator(const HomePage()),
+            _buildNavigator(const RecipeList()),
+            _buildNavigator(const RecipeList(history: true)),
+            _buildNavigator(const RecipeList(onlyFavorites: true)),
           ],
         ),
       ),
-      floatingActionButton: _returnState.returnNeeded()
+      floatingActionButton: returnState.returnNeeded()
           ? FloatingActionButton(
               onPressed: () {
                 Navigator.of(_navigatorContext).pop();
@@ -207,18 +204,4 @@ class _MyHomePageState extends State<MyHomePage>
       resizeToAvoidBottomInset: false,
     );
   }
-}
-
-void saveFavorite(String id) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  List<String> favorites = prefs.getStringList('favorites') ?? [];
-  favorites.add(id);
-  prefs.setStringList('favorites', favorites);
-}
-
-void removeSavedFavorite(String id) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  List<String> favorites = prefs.getStringList('favorites') ?? [];
-  favorites.remove(id);
-  prefs.setStringList('favorites', favorites);
 }

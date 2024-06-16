@@ -2,14 +2,13 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 import 'package:recettes/recipe.dart';
-import 'package:recettes/return_state.dart';
+import 'package:recettes/main.dart';
 import 'package:recettes/recipes_list.dart';
 
 class CategoryButton extends StatelessWidget {
   final RecipeCategory category;
-  final ReturnState returnState;
 
-  const CategoryButton({Key? key, required this.category, required this.returnState})
+  const CategoryButton({Key? key, required this.category})
       : super(key: key);
 
   @override
@@ -25,7 +24,6 @@ class CategoryButton extends StatelessWidget {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => RecipeList(
-                returnState: returnState,
                 categoryFilter: category,
               ),
             ),
