@@ -6,14 +6,12 @@ import 'package:recettes/custom_icon.dart';
 import 'package:recettes/recipe.dart';
 import 'package:recettes/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:share_plus/share_plus.dart';
 
 class RecipeView extends StatefulWidget {
   final Recipe recipe;
 
-  const RecipeView(
-      {Key? key,
-      required this.recipe})
-      : super(key: key);
+  const RecipeView({Key? key, required this.recipe}) : super(key: key);
 
   @override
   State<RecipeView> createState() => _RecipeViewState();
@@ -136,6 +134,21 @@ class _RecipeViewState extends State<RecipeView> {
                       },
                     ),
                   ),
+                  const SizedBox(width: 10.0),
+                  SizedBox(
+                    height: 30.0,
+                    width: 30.0,
+                    child: IconButton(
+                      padding: const EdgeInsets.all(0.0),
+                      iconSize: 30.0,
+                      icon: const Icon(
+                        Icons.ios_share,
+                      ),
+                      onPressed: () {
+                        Share.share("${widget.recipe.title} \n\n ${widget.recipe.description}", subject: widget.recipe.title);
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -171,12 +184,10 @@ class _RecipeViewState extends State<RecipeView> {
                         prefs.setDouble('scaleFactor', _scaleFactor);
                       });
                     }),
-                    child: SelectionArea(
-                      child: Text(
-                        widget.recipe.description,
-                        style: TextStyle(
-                          fontSize: 16.0 * _scaleFactor,
-                        ),
+                    child: Text(
+                      widget.recipe.description,
+                      style: TextStyle(
+                        fontSize: 16.0 * _scaleFactor,
                       ),
                     ),
                   ),
