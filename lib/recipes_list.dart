@@ -245,13 +245,15 @@ class _RecipeListState extends State<RecipeList> {
         
                   final prefs = snapshot.data!;
                   _history = prefs.getStringList('history') ?? [];
+                  // remove easter egg recipe from history
+                  _history.removeWhere((id) => id == "0000319");
                   if (widget.onlyFavorites) {
                     _recipesToDisplay = recipes
                         .where((recipe) =>
                             favoriteRecipes.isFavorite(recipe.id) ||
                             _pendingRemove.contains(recipe.id))
                         .toList();
-                    _recipesToDisplay.sort((a, b) => a.title.compareTo(b.title));
+                    _recipesToDisplay.sort((a, b) => removeDiacritics(a.title).compareTo(removeDiacritics(b.title)));
                   } else if (widget.history) {
                     _recipesToDisplay = recipes
                         .where((recipe) => _history.contains(recipe.id))
@@ -266,7 +268,7 @@ class _RecipeListState extends State<RecipeList> {
                         .where(
                             (recipe) => recipe.category == widget.categoryFilter)
                         .toList();
-                    _recipesToDisplay.sort((a, b) => a.title.compareTo(b.title));
+                    _recipesToDisplay.sort((a, b) => removeDiacritics(a.title).compareTo(removeDiacritics(b.title)));
                   } else if (_keywords.isNotEmpty) {
                     _recipesToDisplay = recipes
                         .where((recipe) => _filterScore(recipe, _keywords) > 0)
@@ -278,16 +280,16 @@ class _RecipeListState extends State<RecipeList> {
                       if (scoreA != scoreB) {
                         return scoreB - scoreA;
                       }
-                      return a.title.compareTo(b.title);
+                      return removeDiacritics(a.title).compareTo(removeDiacritics(b.title));
                     });
                   } else {
                     _recipesToDisplay = recipes;
                     // sort recipeToDisplay by title then by subtitle
                     _recipesToDisplay.sort((a, b) {
                       if (a.title != b.title) {
-                        return a.title.compareTo(b.title);
+                        return removeDiacritics(a.title).compareTo(removeDiacritics(b.title));
                       }
-                      return a.subtitle.compareTo(b.subtitle);
+                      return removeDiacritics(a.subtitle).compareTo(removeDiacritics(b.subtitle));
                     });
                   }
         
