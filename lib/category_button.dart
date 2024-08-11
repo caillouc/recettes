@@ -35,17 +35,16 @@ class CategoryButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(20.0),
             side: BorderSide(color: category.getColor(), width: 2.0),
           ),
-          foregroundColor: Colors.black,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(width: 8.0),
-            category.getIcon(), // Assuming getIcon() returns IconData
+            category.getIcon(context), // Assuming getIcon() returns IconData
             const SizedBox(width: 8.0),
             AutoSizeText(
               category.getName(),
-              style: const TextStyle(
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),

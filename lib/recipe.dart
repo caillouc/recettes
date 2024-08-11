@@ -48,22 +48,22 @@ enum RecipeCategory {
     }
   }
 
-  Widget getIcon() {
+  Widget getIcon(BuildContext context) {
     switch (this) {
       case RecipeCategory.viande:
-        return CustomIcon.meat.getColorOutlinedIcon();
+        return CustomIcon.meat.getColorOutlinedIcon(context);
       case RecipeCategory.poisson:
-        return CustomIcon.fish.getColorOutlinedIcon();
+        return CustomIcon.fish.getColorOutlinedIcon(context);
       case RecipeCategory.legume:
-        return CustomIcon.carrot.getColorOutlinedIcon();
+        return CustomIcon.carrot.getColorOutlinedIcon(context);
       case RecipeCategory.dessert:
-        return CustomIcon.dessert.getColorOutlinedIcon();
+        return CustomIcon.dessert.getColorOutlinedIcon(context);
       case RecipeCategory.pain:
-        return CustomIcon.bread.getColorOutlinedIcon();
+        return CustomIcon.bread.getColorOutlinedIcon(context);
       case RecipeCategory.apero:
-        return CustomIcon.apero.getColorOutlinedIcon();
+        return CustomIcon.apero.getColorOutlinedIcon(context);
       case RecipeCategory.other:
-        return CustomIcon.other.getColorOutlinedIcon();
+        return CustomIcon.other.getColorOutlinedIcon(context);
     }
   }
 }

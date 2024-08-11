@@ -53,9 +53,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
               padding: const EdgeInsets.symmetric(vertical: 5.0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5.0),
-                side: const BorderSide(color: Colors.amber, width: 2.0),
+                side: BorderSide(color: Theme.of(context).primaryColor, width: 2.0),
               ),
-              foregroundColor: Colors.black,
             ),
           ),
         ),
@@ -65,13 +64,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
             controller: _textEditingController,
             onSubmitted: (_) => _submitSearch(),
             decoration: InputDecoration(
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.amber, width: 2.0),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2.0),
               ),
               border: const OutlineInputBorder(),
               hintText: 'Tappez vos ingrédients',
               labelText: 'On mange quoi ?',
-              labelStyle: const TextStyle(color: Colors.grey),
+              labelStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
               // add clear icon
               suffixIcon: IconButton(
                 icon: const Icon(Icons.clear),

@@ -146,7 +146,7 @@ class _RecipeListState extends State<RecipeList> {
         title: AutoSizeText(
           maxLines: 2,
           recipe.title,
-          style: const TextStyle(
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -154,21 +154,21 @@ class _RecipeListState extends State<RecipeList> {
         subtitle: AutoSizeText(
           maxLines: 1,
           recipe.subtitle,
-          style: const TextStyle(fontSize: 16, color: Colors.grey),
+          style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.secondaryFixedDim),
         ),
-        tileColor: const Color(0xfff7f2fa),
+        tileColor: Theme.of(context).colorScheme.surfaceContainerLow,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        leading: recipe.category.getIcon(),
+        leading: recipe.category.getIcon(context),
         onTap: () {
           onRecipePressed(recipe);
         },
         // make trailing a favorite button
         trailing: IconButton(
           icon: isFav
-              ? CustomIcon.favorite.getColorSolidIcon()
-              : CustomIcon.favorite.getBlackOutlinedIcon(),
+              ? CustomIcon.favorite.getColorSolidIcon(context)
+              : CustomIcon.favorite.getBlackOutlinedIcon(context),
           onPressed: () {
             toogleFav(recipe);
           },
@@ -201,7 +201,10 @@ class _RecipeListState extends State<RecipeList> {
                             : widget.categoryFilter == RecipeCategory.other
                                 ? 'Toutes les recettes'
                                 : widget.categoryFilter.getName(),
-                    style: const TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        fontSize: 30.0,
+                        fontWeight: FontWeight.bold,
+                      ),
                   )
                 : SingleChildScrollView(
                   scrollDirection: Axis.horizontal,

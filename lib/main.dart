@@ -28,14 +28,36 @@ class RecetteApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Recettes GM',
+        // add dark mode
         theme: ThemeData(
           useMaterial3: true,
-          primarySwatch: Colors.amber,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.amber,
+            dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
+            brightness: Brightness.light,
+          ),
+          textTheme: Typography.blackMountainView,
+          primaryColor: Colors.amber,
           floatingActionButtonTheme: const FloatingActionButtonThemeData(
             backgroundColor: Colors.amber,
             foregroundColor: Colors.black,
           ),
         ),
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.amber,
+            dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
+            brightness: Brightness.dark
+          ),
+          textTheme: Typography.whiteMountainView,
+          primaryColor: Colors.amber,
+          floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            backgroundColor: Colors.amber,
+            foregroundColor: Colors.black,
+          ),
+        ),
+        themeMode: ThemeMode.dark,
         home: const MyHomePage(),
       ),
     );
@@ -152,27 +174,27 @@ class _MyHomePageState extends State<MyHomePage>
     return Scaffold(
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: _onDestinationSelected,
-        indicatorColor: Colors.amber,
+        indicatorColor: Theme.of(context).primaryColor,
         selectedIndex: _currentPageIndex,
         destinations: <Widget>[
           NavigationDestination(
-            icon: CustomIcon.home.getBlackOutlinedIcon(),
-            selectedIcon: CustomIcon.home.getBlackSolidIcon(),
+            icon: CustomIcon.home.getBlackOutlinedIcon(context),
+            selectedIcon: CustomIcon.home.getBlackSolidIcon(context),
             label: 'Home',
           ),
           NavigationDestination(
-            icon: CustomIcon.list.getBlackOutlinedIcon(),
-            selectedIcon: CustomIcon.list.getBlackSolidIcon(),
+            icon: CustomIcon.list.getBlackOutlinedIcon(context),
+            selectedIcon: CustomIcon.list.getBlackSolidIcon(context),
             label: 'Recettes',
           ),
           NavigationDestination(
-            icon: CustomIcon.history.getBlackOutlinedIcon(),
-            selectedIcon: CustomIcon.history.getBlackSolidIcon(),
+            icon: CustomIcon.history.getBlackOutlinedIcon(context),
+            selectedIcon: CustomIcon.history.getBlackSolidIcon(context),
             label: 'Historique',
           ),
           NavigationDestination(
-            icon: CustomIcon.favorite.getBlackOutlinedIcon(),
-            selectedIcon: CustomIcon.favorite.getBlackSolidIcon(),
+            icon: CustomIcon.favorite.getBlackOutlinedIcon(context),
+            selectedIcon: CustomIcon.favorite.getBlackSolidIcon(context),
             label: 'Favoris',
           ),
         ],

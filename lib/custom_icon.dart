@@ -63,27 +63,45 @@ enum CustomIcon {
     return 'assets/icons/${_iconBaseName[this]}.svg';
   }
 
-  Widget getColorSolidIcon() {
+  Widget getColorSolidIcon(BuildContext context) {
+    if (Theme.of(context).brightness == Brightness.dark && _iconColor[this] == Colors.black) {
+      return iconConstructor(_getSolidPath(), Colors.white);
+    }
     return iconConstructor(_getSolidPath(), _iconColor[this]!);
   }
 
-  Widget getColorOutlinedIcon() {
+  Widget getColorOutlinedIcon(BuildContext context) {
+    if (Theme.of(context).brightness == Brightness.dark && _iconColor[this] == Colors.black) {
+      return iconConstructor(_getRegularPath(), Colors.white);
+    }
     return iconConstructor(_getRegularPath(), _iconColor[this]!);
   }
 
-  Widget getColorSolidBigIcon() {
+  Widget getColorSolidBigIcon(BuildContext context) {
+    if (Theme.of(context).brightness == Brightness.dark && _iconColor[this] == Colors.black) {
+      return iconConstructor(_getSolidPath(), Colors.white, size: 50.0);
+    }
     return iconConstructor(_getSolidPath(), _iconColor[this]!, size: 50.0);
   }
 
-  Widget getColorOutlinedBigIcon() {
+  Widget getColorOutlinedBigIcon(BuildContext context) {
+    if (Theme.of(context).brightness == Brightness.dark && _iconColor[this] == Colors.black) {
+      return iconConstructor(_getSolidPath(), Colors.white, size: 50.0);
+    }
     return iconConstructor(_getRegularPath(), _iconColor[this]!, size: 50.0);
   }
 
-  Widget getBlackSolidIcon() {
+  Widget getBlackSolidIcon(BuildContext context) {
+    // if (Theme.of(context).brightness == Brightness.dark) {
+    //   return iconConstructor(_getSolidPath(), Colors.white);
+    // }
     return iconConstructor(_getSolidPath(), Colors.black);
   }
 
-  Widget getBlackOutlinedIcon() {
+  Widget getBlackOutlinedIcon(BuildContext context) {
+    if (Theme.of(context).brightness == Brightness.dark) {
+      return iconConstructor(_getRegularPath(), Colors.white);
+    }
     return iconConstructor(_getRegularPath(), Colors.black);
   }
 }

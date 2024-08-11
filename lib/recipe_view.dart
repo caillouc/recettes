@@ -59,8 +59,8 @@ class _RecipeViewState extends State<RecipeView> {
                     child: AutoSizeText(
                       widget.recipe.title,
                       maxLines: 2,
-                      style: const TextStyle(
-                        fontSize: 35.0,
+                      style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                       overflow: TextOverflow.visible,
@@ -69,8 +69,8 @@ class _RecipeViewState extends State<RecipeView> {
                   ),
                   IconButton(
                     icon: favoriteRecipes.isFavorite(widget.recipe.id)
-                        ? CustomIcon.favorite.getColorSolidBigIcon()
-                        : CustomIcon.favorite.getColorOutlinedBigIcon(),
+                        ? CustomIcon.favorite.getColorSolidBigIcon(context)
+                        : CustomIcon.favorite.getColorOutlinedBigIcon(context),
                     onPressed: () {
                       HapticFeedback.heavyImpact();
                       if (favoriteRecipes.isFavorite(widget.recipe.id)) {
@@ -87,15 +87,14 @@ class _RecipeViewState extends State<RecipeView> {
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Row(
                 children: [
-                  widget.recipe.category.getIcon(),
+                  widget.recipe.category.getIcon(context),
                   const SizedBox(width: 10.0),
                   Expanded(
                     child: AutoSizeText(
                       maxLines: 1,
                       widget.recipe.subtitle,
-                      style: const TextStyle(
+                      style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         fontSize: 20.0,
-                        color: Colors.grey,
                       ),
                     ),
                   ),
@@ -119,8 +118,8 @@ class _RecipeViewState extends State<RecipeView> {
                             .showSnackBar(
                               const SnackBar(
                                 content: Text(
-                                  'Pincez pour zoomer, Tapez deux fois pour réinitialiser',
-                                  style: TextStyle(fontSize: 17.0),
+                                  'Pincez pour zoomer\nTapez deux fois pour réinitialiser',
+                                  style: TextStyle(fontSize: 18.0),
                                 ),
                                 duration: Duration(seconds: 3),
                               ),
@@ -159,9 +158,9 @@ class _RecipeViewState extends State<RecipeView> {
                 child: Container(
                   // Set color to present the recipe as a piece of code
                   width: double.infinity,
-                  decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 208, 208, 208),
-                      borderRadius: BorderRadius.all(Radius.circular(20))),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      borderRadius: const BorderRadius.all(Radius.circular(20))),
                   padding: const EdgeInsets.all(15.0),
                   child: GestureDetector(
                     onScaleStart: (details) {
@@ -186,7 +185,7 @@ class _RecipeViewState extends State<RecipeView> {
                     }),
                     child: Text(
                       widget.recipe.description,
-                      style: TextStyle(
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         fontSize: 16.0 * _scaleFactor,
                       ),
                     ),
