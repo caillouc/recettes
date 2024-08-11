@@ -9,6 +9,8 @@ import 'package:recettes/recipes_list.dart';
 import 'package:recettes/return_state.dart';
 import 'package:recettes/recipe.dart';
 import 'package:recettes/custom_icon.dart';
+import 'package:recettes/settings_state.dart';
+import 'package:recettes/settings.dart';
 
 void main() {
   runApp(const RecetteApp());
@@ -17,9 +19,28 @@ void main() {
 List<Recipe> recipes = List.empty();
 final ReturnState returnState = ReturnState();
 final FavoriteRecipes favoriteRecipes = FavoriteRecipes();
+final SettingsState settings = SettingsState();
 
-class RecetteApp extends StatelessWidget {
+class RecetteApp extends StatefulWidget {
   const RecetteApp({super.key});
+
+  @override
+  State<RecetteApp> createState() => _RecetteAppState();
+}
+
+class _RecetteAppState extends State<RecetteApp> {
+
+  @override
+  void initState() {
+    super.initState();
+    favoriteRecipes.initFavorites();
+    settings.init();
+    settings.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
 
   // This widget is the root of your application.
   @override
@@ -46,10 +67,9 @@ class RecetteApp extends StatelessWidget {
         darkTheme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.amber,
-            dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
-            brightness: Brightness.dark
-          ),
+              seedColor: Colors.amber,
+              dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
+              brightness: Brightness.dark),
           textTheme: Typography.whiteMountainView,
           primaryColor: Colors.amber,
           floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -57,7 +77,7 @@ class RecetteApp extends StatelessWidget {
             foregroundColor: Colors.black,
           ),
         ),
-        themeMode: ThemeMode.dark,
+        themeMode: settings.getThemeMode(),
         home: const MyHomePage(),
       ),
     );
@@ -80,8 +100,12 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void initState() {
     super.initState();
-    favoriteRecipes.initFavorites();
     returnState.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+    settings.addListener(() {
       if (mounted) {
         setState(() {});
       }
@@ -172,11 +196,14 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButtonLocation: returnState.returnNeeded()
+          ? FloatingActionButtonLocation.endFloat
+          : FloatingActionButtonLocation.startFloat,
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: _onDestinationSelected,
         indicatorColor: Theme.of(context).primaryColor,
         selectedIndex: _currentPageIndex,
-        destinations: <Widget>[
+        destinations: settings.showHistory() ? <Widget>[
           NavigationDestination(
             icon: CustomIcon.home.getBlackOutlinedIcon(context),
             selectedIcon: CustomIcon.home.getBlackSolidIcon(context),
@@ -197,6 +224,22 @@ class _MyHomePageState extends State<MyHomePage>
             selectedIcon: CustomIcon.favorite.getBlackSolidIcon(context),
             label: 'Favoris',
           ),
+        ] : <Widget>[
+          NavigationDestination(
+            icon: CustomIcon.home.getBlackOutlinedIcon(context),
+            selectedIcon: CustomIcon.home.getBlackSolidIcon(context),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: CustomIcon.list.getBlackOutlinedIcon(context),
+            selectedIcon: CustomIcon.list.getBlackSolidIcon(context),
+            label: 'Recettes',
+          ),
+          NavigationDestination(
+            icon: CustomIcon.favorite.getBlackOutlinedIcon(context),
+            selectedIcon: CustomIcon.favorite.getBlackSolidIcon(context),
+            label: 'Favoris',
+          ),
         ],
       ),
       body: SafeArea(
@@ -207,12 +250,18 @@ class _MyHomePageState extends State<MyHomePage>
               ? const NeverScrollableScrollPhysics()
               : const AlwaysScrollableScrollPhysics(),
           onPageChanged: _onPageChanged,
-          children: <Widget>[
-            _buildNavigator(const HomePage()),
-            _buildNavigator(const RecipeList()),
-            _buildNavigator(const RecipeList(history: true)),
-            _buildNavigator(const RecipeList(onlyFavorites: true)),
-          ],
+          children: settings.showHistory()
+              ? <Widget>[
+                  _buildNavigator(const HomePage()),
+                  _buildNavigator(const RecipeList()),
+                  _buildNavigator(const RecipeList(history: true)),
+                  _buildNavigator(const RecipeList(onlyFavorites: true)),
+                ]
+              : [
+                  _buildNavigator(const HomePage()),
+                  _buildNavigator(const RecipeList()),
+                  _buildNavigator(const RecipeList(onlyFavorites: true)),
+                ],
         ),
       ),
       floatingActionButton: returnState.returnNeeded()
@@ -222,7 +271,20 @@ class _MyHomePageState extends State<MyHomePage>
               },
               child: const Icon(Icons.arrow_back),
             )
-          : null,
+          : _currentPageIndex == 0
+              ? FloatingActionButton.small(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  onPressed: () {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const Settings();
+                      },
+                    );
+                  },
+                  child: const Icon(Icons.settings),
+                )
+              : null,
       resizeToAvoidBottomInset: false,
     );
   }
