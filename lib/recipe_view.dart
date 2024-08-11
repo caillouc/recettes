@@ -11,7 +11,7 @@ import 'package:share_plus/share_plus.dart';
 class RecipeView extends StatefulWidget {
   final Recipe recipe;
 
-  const RecipeView({Key? key, required this.recipe}) : super(key: key);
+  const RecipeView({super.key, required this.recipe});
 
   @override
   State<RecipeView> createState() => _RecipeViewState();
@@ -41,7 +41,7 @@ class _RecipeViewState extends State<RecipeView> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         returnState.returnPressed();
       },
       child: Card(

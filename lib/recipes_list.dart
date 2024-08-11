@@ -19,12 +19,12 @@ class RecipeList extends StatefulWidget {
   final bool history;
 
   const RecipeList({
-    Key? key,
+    super.key,
     this.onlyFavorites = false,
     this.categoryFilter = RecipeCategory.other,
     this.keywordsFilter = const [],
     this.history = false,
-  }) : super(key: key);
+  });
 
   @override
   State<RecipeList> createState() => _RecipeListState();
@@ -53,15 +53,16 @@ class _RecipeListState extends State<RecipeList> {
 
   void toogleFav(Recipe recipe) {
     HapticFeedback.heavyImpact();
-    bool isFav =
-        favoriteRecipes.isFavorite(recipe.id) && !_pendingRemove.contains(recipe.id);
+    bool isFav = favoriteRecipes.isFavorite(recipe.id) &&
+        !_pendingRemove.contains(recipe.id);
     if (isFav) {
       if (widget.onlyFavorites) {
         favoriteRecipes.removeFavorite(recipe.id);
         setState(() {
           _pendingRemove.add(recipe.id);
         });
-        _removeTimers[recipe.id] = Timer(Duration(milliseconds: _removeDelay), () {
+        _removeTimers[recipe.id] =
+            Timer(Duration(milliseconds: _removeDelay), () {
           setState(() {
             _pendingRemove.remove(recipe.id);
           });
@@ -87,7 +88,7 @@ class _RecipeListState extends State<RecipeList> {
         _history.removeAt(0);
       });
     }
-    
+
     if (_history.contains(recipe.id)) {
       setState(() {
         _history.remove(recipe.id);
@@ -140,21 +141,23 @@ class _RecipeListState extends State<RecipeList> {
     bool isFav = favoriteRecipes.isFavorite(recipe.id);
     return AnimatedOpacity(
       opacity: _pendingRemove.contains(recipe.id) ? 0.0 : 1.0,
-      duration:
-          Duration(milliseconds: _pendingRemove.contains(recipe.id) ? _removeDelay : 0),
+      duration: Duration(
+          milliseconds: _pendingRemove.contains(recipe.id) ? _removeDelay : 0),
       child: ListTile(
         title: AutoSizeText(
           maxLines: 2,
           recipe.title,
           style: Theme.of(context).textTheme.titleMedium!.copyWith(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
         ),
         subtitle: AutoSizeText(
           maxLines: 1,
           recipe.subtitle,
-          style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.secondaryFixedDim),
+          style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.secondaryFixedDim),
         ),
         tileColor: Theme.of(context).colorScheme.surfaceContainerLow,
         shape: RoundedRectangleBorder(
@@ -180,7 +183,7 @@ class _RecipeListState extends State<RecipeList> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
           returnState.returnPressed();
         }
@@ -201,17 +204,18 @@ class _RecipeListState extends State<RecipeList> {
                             : widget.categoryFilter == RecipeCategory.other
                                 ? 'Toutes les recettes'
                                 : widget.categoryFilter.getName(),
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        fontSize: 30.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.bold,
+                        ),
                   )
                 : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
                       children: _keywords
                           .map(
                             (keyword) => Padding(
+                              key: ValueKey(keyword),
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 5.0, vertical: 5.0),
                               child: Chip(
@@ -233,7 +237,7 @@ class _RecipeListState extends State<RecipeList> {
                           )
                           .toList(),
                     ),
-                ),
+                  ),
             const Divider(),
             Expanded(
               child: FutureBuilder(
@@ -243,9 +247,10 @@ class _RecipeListState extends State<RecipeList> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (snapshot.hasError) {
-                    return const Center(child: Text('Error loading preferences'));
+                    return const Center(
+                        child: Text('Error loading preferences'));
                   }
-        
+
                   final prefs = snapshot.data!;
                   _history = prefs.getStringList('history') ?? [];
                   // remove easter egg recipe from history
@@ -256,7 +261,8 @@ class _RecipeListState extends State<RecipeList> {
                             favoriteRecipes.isFavorite(recipe.id) ||
                             _pendingRemove.contains(recipe.id))
                         .toList();
-                    _recipesToDisplay.sort((a, b) => removeDiacritics(a.title).compareTo(removeDiacritics(b.title)));
+                    _recipesToDisplay.sort((a, b) => removeDiacritics(a.title)
+                        .compareTo(removeDiacritics(b.title)));
                   } else if (widget.history) {
                     _recipesToDisplay = recipes
                         .where((recipe) => _history.contains(recipe.id))
@@ -268,10 +274,11 @@ class _RecipeListState extends State<RecipeList> {
                     });
                   } else if (widget.categoryFilter != RecipeCategory.other) {
                     _recipesToDisplay = recipes
-                        .where(
-                            (recipe) => recipe.category == widget.categoryFilter)
+                        .where((recipe) =>
+                            recipe.category == widget.categoryFilter)
                         .toList();
-                    _recipesToDisplay.sort((a, b) => removeDiacritics(a.title).compareTo(removeDiacritics(b.title)));
+                    _recipesToDisplay.sort((a, b) => removeDiacritics(a.title)
+                        .compareTo(removeDiacritics(b.title)));
                   } else if (_keywords.isNotEmpty) {
                     _recipesToDisplay = recipes
                         .where((recipe) => _filterScore(recipe, _keywords) > 0)
@@ -283,25 +290,29 @@ class _RecipeListState extends State<RecipeList> {
                       if (scoreA != scoreB) {
                         return scoreB - scoreA;
                       }
-                      return removeDiacritics(a.title).compareTo(removeDiacritics(b.title));
+                      return removeDiacritics(a.title)
+                          .compareTo(removeDiacritics(b.title));
                     });
                   } else {
                     _recipesToDisplay = recipes;
                     // sort recipeToDisplay by title then by subtitle
                     _recipesToDisplay.sort((a, b) {
                       if (a.title != b.title) {
-                        return removeDiacritics(a.title).compareTo(removeDiacritics(b.title));
+                        return removeDiacritics(a.title)
+                            .compareTo(removeDiacritics(b.title));
                       }
-                      return removeDiacritics(a.subtitle).compareTo(removeDiacritics(b.subtitle));
+                      return removeDiacritics(a.subtitle)
+                          .compareTo(removeDiacritics(b.subtitle));
                     });
                   }
-        
+
                   if (_recipesToDisplay.isEmpty) {
                     String message = "";
                     if (widget.onlyFavorites) {
                       message = 'Vous n\'avez pas de favoris';
                     } else if (widget.history) {
-                      message = 'Vous n\'avez pas encore cliqué sur une recette';
+                      message =
+                          'Vous n\'avez pas encore cliqué sur une recette';
                     } else if (_keywords.isNotEmpty) {
                       message = 'Pas de recette pour les mots-clés recherchés';
                     } else {

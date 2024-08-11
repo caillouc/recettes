@@ -8,8 +8,7 @@ import 'package:recettes/recipes_list.dart';
 class CategoryButton extends StatelessWidget {
   final RecipeCategory category;
 
-  const CategoryButton({Key? key, required this.category})
-      : super(key: key);
+  const CategoryButton({super.key, required this.category});
 
   @override
   build(BuildContext context) {

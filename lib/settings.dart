@@ -97,7 +97,7 @@ class _SettingsState extends State<Settings> {
               ),
               const Divider(),
               Text(
-                "Bug, Nouvelle recette, Question : ",
+                "Bugs, Nouvelles recettes, Questions :",
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               GestureDetector(

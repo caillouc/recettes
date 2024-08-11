@@ -4,7 +4,7 @@ import 'package:recettes/recipes_list.dart';
 import 'package:recettes/main.dart';
 
 class CustomTextField extends StatefulWidget {
-  const CustomTextField({Key? key}) : super(key: key);
+  const CustomTextField({super.key});
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
