@@ -29,7 +29,6 @@ class RecetteApp extends StatefulWidget {
 }
 
 class _RecetteAppState extends State<RecetteApp> {
-
   @override
   void initState() {
     super.initState();
@@ -196,74 +195,99 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButtonLocation: returnState.returnNeeded()
-          ? FloatingActionButtonLocation.endFloat
-          : FloatingActionButtonLocation.startFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: _onDestinationSelected,
         indicatorColor: Theme.of(context).primaryColor,
         selectedIndex: _currentPageIndex,
-        destinations: settings.showHistory() ? <Widget>[
-          NavigationDestination(
-            icon: CustomIcon.home.getBlackOutlinedIcon(context),
-            selectedIcon: CustomIcon.home.getBlackSolidIcon(context),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: CustomIcon.list.getBlackOutlinedIcon(context),
-            selectedIcon: CustomIcon.list.getBlackSolidIcon(context),
-            label: 'Recettes',
-          ),
-          NavigationDestination(
-            icon: CustomIcon.history.getBlackOutlinedIcon(context),
-            selectedIcon: CustomIcon.history.getBlackSolidIcon(context),
-            label: 'Historique',
-          ),
-          NavigationDestination(
-            icon: CustomIcon.favorite.getBlackOutlinedIcon(context),
-            selectedIcon: CustomIcon.favorite.getBlackSolidIcon(context),
-            label: 'Favoris',
-          ),
-        ] : <Widget>[
-          NavigationDestination(
-            icon: CustomIcon.home.getBlackOutlinedIcon(context),
-            selectedIcon: CustomIcon.home.getBlackSolidIcon(context),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: CustomIcon.list.getBlackOutlinedIcon(context),
-            selectedIcon: CustomIcon.list.getBlackSolidIcon(context),
-            label: 'Recettes',
-          ),
-          NavigationDestination(
-            icon: CustomIcon.favorite.getBlackOutlinedIcon(context),
-            selectedIcon: CustomIcon.favorite.getBlackSolidIcon(context),
-            label: 'Favoris',
-          ),
-        ],
+        destinations: settings.showHistory()
+            ? <Widget>[
+                NavigationDestination(
+                  icon: CustomIcon.home.getBlackOutlinedIcon(context),
+                  selectedIcon: CustomIcon.home.getBlackSolidIcon(context),
+                  label: 'Home',
+                ),
+                NavigationDestination(
+                  icon: CustomIcon.list.getBlackOutlinedIcon(context),
+                  selectedIcon: CustomIcon.list.getBlackSolidIcon(context),
+                  label: 'Recettes',
+                ),
+                NavigationDestination(
+                  icon: CustomIcon.history.getBlackOutlinedIcon(context),
+                  selectedIcon: CustomIcon.history.getBlackSolidIcon(context),
+                  label: 'Historique',
+                ),
+                NavigationDestination(
+                  icon: CustomIcon.favorite.getBlackOutlinedIcon(context),
+                  selectedIcon: CustomIcon.favorite.getBlackSolidIcon(context),
+                  label: 'Favoris',
+                ),
+              ]
+            : <Widget>[
+                NavigationDestination(
+                  icon: CustomIcon.home.getBlackOutlinedIcon(context),
+                  selectedIcon: CustomIcon.home.getBlackSolidIcon(context),
+                  label: 'Home',
+                ),
+                NavigationDestination(
+                  icon: CustomIcon.list.getBlackOutlinedIcon(context),
+                  selectedIcon: CustomIcon.list.getBlackSolidIcon(context),
+                  label: 'Recettes',
+                ),
+                NavigationDestination(
+                  icon: CustomIcon.favorite.getBlackOutlinedIcon(context),
+                  selectedIcon: CustomIcon.favorite.getBlackSolidIcon(context),
+                  label: 'Favoris',
+                ),
+              ],
       ),
       body: SafeArea(
-        child: PageView(
-          controller: _pageController,
-          // disable swipe when needReturn is true
-          physics: returnState.returnNeeded()
-              ? const NeverScrollableScrollPhysics()
-              : const AlwaysScrollableScrollPhysics(),
-          onPageChanged: _onPageChanged,
-          children: settings.showHistory()
-              ? <Widget>[
-                  _buildNavigator(const HomePage()),
-                  _buildNavigator(const RecipeList()),
-                  _buildNavigator(const RecipeList(history: true)),
-                  _buildNavigator(const RecipeList(onlyFavorites: true)),
-                ]
-              : [
-                  _buildNavigator(const HomePage()),
-                  _buildNavigator(const RecipeList()),
-                  _buildNavigator(const RecipeList(onlyFavorites: true)),
-                ],
+        child: Stack(
+          children: [
+            PageView(
+              controller: _pageController,
+              // disable swipe when needReturn is true
+              physics: returnState.returnNeeded()
+                  ? const NeverScrollableScrollPhysics()
+                  : const AlwaysScrollableScrollPhysics(),
+              onPageChanged: _onPageChanged,
+              children: settings.showHistory()
+                  ? <Widget>[
+                      _buildNavigator(const HomePage()),
+                      _buildNavigator(const RecipeList()),
+                      _buildNavigator(const RecipeList(history: true)),
+                      _buildNavigator(const RecipeList(onlyFavorites: true)),
+                    ]
+                  : [
+                      _buildNavigator(const HomePage()),
+                      _buildNavigator(const RecipeList()),
+                      _buildNavigator(const RecipeList(onlyFavorites: true)),
+                    ],
+            ),
+            Positioned(
+              bottom: 10,
+              left: 10,
+            child: _currentPageIndex == 0 && !returnState.returnNeeded() ?
+              IconButton(
+                onPressed: () {
+                  showModalBottomSheet<void>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const Settings();
+                    },
+                  );
+                },
+                icon: Icon(
+                  size: 25,
+                  Icons.settings_outlined,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ) : const SizedBox(),
+            ),
+          ],
         ),
       ),
+      // no amination for setting button but animation of return button
       floatingActionButton: returnState.returnNeeded()
           ? FloatingActionButton(
               onPressed: () {
@@ -271,20 +295,7 @@ class _MyHomePageState extends State<MyHomePage>
               },
               child: const Icon(Icons.arrow_back),
             )
-          : _currentPageIndex == 0
-              ? FloatingActionButton.small(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  onPressed: () {
-                    showModalBottomSheet<void>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const Settings();
-                      },
-                    );
-                  },
-                  child: const Icon(Icons.settings),
-                )
-              : null,
+          : null,
       resizeToAvoidBottomInset: false,
     );
   }

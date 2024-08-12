@@ -114,7 +114,9 @@ class _SettingsState extends State<Settings> {
                   "recettes.gm@clsn.fr",
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         color: Theme.of(context).primaryColor,
+                        // underline in color of primaryColor
                         decoration: TextDecoration.underline,
+                        decorationColor: Theme.of(context).primaryColor,
                       ),
                 ),
               ),
