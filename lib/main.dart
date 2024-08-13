@@ -242,49 +242,25 @@ class _MyHomePageState extends State<MyHomePage>
               ],
       ),
       body: SafeArea(
-        child: Stack(
-          children: [
-            PageView(
-              controller: _pageController,
-              // disable swipe when needReturn is true
-              physics: returnState.returnNeeded()
-                  ? const NeverScrollableScrollPhysics()
-                  : const AlwaysScrollableScrollPhysics(),
-              onPageChanged: _onPageChanged,
-              children: settings.showHistory()
-                  ? <Widget>[
-                      _buildNavigator(const HomePage()),
-                      _buildNavigator(const RecipeList()),
-                      _buildNavigator(const RecipeList(history: true)),
-                      _buildNavigator(const RecipeList(onlyFavorites: true)),
-                    ]
-                  : [
-                      _buildNavigator(const HomePage()),
-                      _buildNavigator(const RecipeList()),
-                      _buildNavigator(const RecipeList(onlyFavorites: true)),
-                    ],
-            ),
-            Positioned(
-              bottom: 10,
-              left: 10,
-            child: _currentPageIndex == 0 && !returnState.returnNeeded() ?
-              IconButton(
-                onPressed: () {
-                  showModalBottomSheet<void>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return const Settings();
-                    },
-                  );
-                },
-                icon: Icon(
-                  size: 25,
-                  Icons.settings_outlined,
-                  color: Theme.of(context).primaryColor,
-                ),
-              ) : const SizedBox(),
-            ),
-          ],
+        child: PageView(
+          controller: _pageController,
+          // disable swipe when needReturn is true
+          physics: returnState.returnNeeded()
+              ? const NeverScrollableScrollPhysics()
+              : const AlwaysScrollableScrollPhysics(),
+          onPageChanged: _onPageChanged,
+          children: settings.showHistory()
+              ? <Widget>[
+                  _buildNavigator(const HomePage()),
+                  _buildNavigator(const RecipeList()),
+                  _buildNavigator(const RecipeList(history: true)),
+                  _buildNavigator(const RecipeList(onlyFavorites: true)),
+                ]
+              : [
+                  _buildNavigator(const HomePage()),
+                  _buildNavigator(const RecipeList()),
+                  _buildNavigator(const RecipeList(onlyFavorites: true)),
+                ],
         ),
       ),
       // no amination for setting button but animation of return button

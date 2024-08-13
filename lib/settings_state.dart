@@ -3,12 +3,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsState extends ChangeNotifier{
   String _mode = 'system';
-  bool _history = true;
+  bool _history = false;
 
   void init() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _mode = prefs.getString('darkMode') ?? 'system';
-    _history = prefs.getBool('showHistory') ?? true;
+    _history = prefs.getBool('showHistory') ?? false;
     notifyListeners();
   }
 
