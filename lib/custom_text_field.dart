@@ -68,7 +68,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2.0),
               ),
               border: const OutlineInputBorder(),
-              hintText: 'Tappez vos ingrédients',
+              hintText: 'Tapez vos ingrédients',
               labelText: 'On mange quoi ?',
               labelStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
                 color: Theme.of(context).colorScheme.secondary,
