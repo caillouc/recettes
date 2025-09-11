@@ -212,6 +212,7 @@ class _RecipeListState extends State<RecipeList> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: _keywords
                           .map(
                             (keyword) => Padding(
@@ -219,7 +220,7 @@ class _RecipeListState extends State<RecipeList> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 5.0, vertical: 5.0),
                               child: Chip(
-                                label: AutoSizeText(
+                                label: Text(
                                   keyword,
                                   style: const TextStyle(fontSize: 25.0),
                                 ),
